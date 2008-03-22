@@ -1,19 +1,15 @@
 <?php
-if($_POST['search']) {
-  $host = $_SERVER['HTTP_HOST'];
-  $uri = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-  header("Location: http://$host$uri/". $_POST['search']);
+$link = mysql_connect('localhost', 'root', '')
+   or die('Could not connect: ' . mysql_error());
+mysql_select_db('hanjadic') or die('Could not select database');
+
+if($_GET['random']) {
+  $results = fetch_all("SELECT * FROM hanja ORDER BY rand() LIMIT 1;"); 
+  $search = $results[0]['hanja'];
 }
 if(!$search) $search = $_GET['search'];
 if(!$search) $search = '字';
 ?>
-<? if(!$_GET['embed']) { ?>
-<html><!-- new -->
-<head>
-<title><?php print $search ?></title>
-<meta name="verify-v1" content="+UM6qgN3/CVGuWlHqgf9GBVKxYyz32j0cmRK+PxrE7s=" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-<meta name="verify-v1" content="+UM6qgN3/CVGuWlHqgf9GBVKxYyz32j0cmRK+PxrE7s=" />
 <style>
 #hanja-body  { font-family:sans-serif; color:black; font-size: 125%; }
 table {font-size: 125%; }
@@ -21,43 +17,13 @@ input {font-size: 125%; }
 a     {text-decoration: none; }
 .hanja { font-size: 150%; }
 </style>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-1741960-2";
-urchinTracker();
-</script>
-</head>
-<body id="hanja-body">
-<center>
-<script type="text/javascript"><!--
-google_ad_client = "pub-2323396850941501";
-/* 728x90, created 3/9/08 */
-google_ad_slot = "0324866860";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
-</center>
-<div style="float:right; text-align:right">
-<a href="http://hanguldesigns.com"><img border="0" src="http://kongbuhaja.com/files/hanja_shirt.jpeg"></a><br />
-<iframe src="http://rcm.amazon.com/e/cm?t=httpthebestbo-20&o=1&p=14&l=st1&mode=books&search=korean%20language&fc1=000000&lt1=&lc1=3366FF&bg1=FFFFFF&f=ifr" marginwidth="0" marginheight="0" width="160" height="600" border="0" frameborder="0" style="border:none;" scrolling="no"></iframe>
-</div>
 
-<div style="position:abslute;">
-<form method="post">
-  漢字 玉篇<input name="search" value="<?= $search ?>" />
-  <p>Join the new <a href="http://kongbuhaja.com">kongbuhaja.com</a> community site for learning Korean.
+<div>
+<form method="get">
+  漢字 玉篇<input name="search" value="<?php print $search ?>"> <a href="/hanjadic/?random=1">random</a>
 </form>
-<? } ?>
 <?php
 mb_internal_encoding("UTF-8");
-$link = mysql_connect('localhost', 'root', '')
-   or die('Could not connect: ' . mysql_error());
-mysql_select_db('hanjadic') or die('Could not select database');
 
 function fetch_all($query) {
   $result = mysql_query($query) or die('Query failed: ' . mysql_error());
@@ -127,7 +93,7 @@ function linkify_pieces($string) {
 
 function linkify($string) {
   if ($string != $search) {
-    return wrap_span('<a href="'. $string .'">'. $string .'</a>', 'hanja');
+    return wrap_span('<a href="/hanjadic/?search='. urlencode($string) .'">'. $string .'</a>', 'hanja');
   }
   return $string;
 }
@@ -161,7 +127,7 @@ function display_results($result, $mappings=array()) {
   echo "</table>\n";
 }
 
-?><div style="font-size: 170px;"><?= $search ?></div><?
+?><div style="font-size: 140px;"><?= $search ?></div><?
 
 display_results(korean_pronunciation($search), array('hanja' => 'linkify_pieces'));
 
@@ -181,8 +147,3 @@ if (mb_strlen($search) > 1) {
 mysql_close($link);
 ?> 
 </div>
-
-<? if (!$_GET['embed']) { ?>
-</body>
-</html>
-<? } ?>
