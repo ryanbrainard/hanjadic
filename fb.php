@@ -21,7 +21,7 @@ if(array_key_exists('delete', $_GET)) {
 }
 
 if(array_key_exists('save', $_GET)) {
-  mysql_query(sprintf('INSERT INTO hanja_user VALUES (%d, "%s", %d)', $user_id, mysql_real_escape_string($search), $_GET['save']));
+  mysql_query(sprintf('INSERT INTO hanja_user (uid, expression, rel) VALUES (%d, "%s", %d)', $user_id, mysql_real_escape_string($search), $_GET['save']));
 }
 
 if(array_key_exists('delete', $_GET) || array_key_exists('save', $_GET)) {
@@ -74,6 +74,21 @@ if(array_key_exists('summary', $_GET)) {
     print '<a href="/hanjadic/?search='. urlencode($result['expression']) .'">'. $result['expression'] .'</a><br/>';
   }
   exit;
+}
+
+$results = fetch_all(sprintf('SELECT uid from hanja_user WHERE expression = "%s"', $search));
+$get_uid = create_function('$i', 'return $i["uid"];');
+$uids = array_map($get_uid, $results);
+$query = 'SELECT first_name, uid, pic_square FROM user WHERE has_added_app = 1 AND uid IN (SELECT uid2 FROM friend WHERE uid1 = '. $user_id .' OR uid2 = '. $user_id .') AND uid IN ('. implode(',', $uids) .')';
+$results = $facebook->api_client->fql_query($query);
+if ($results) {
+  foreach ($results as $result) {
+    if ($result['pic_square']) {
+      print '<img src="'. $result['pic_square'] .'" />';
+    } else {
+      print $result['first_name'];
+    }
+  }
 }
 
 mb_internal_encoding("UTF-8");
@@ -223,7 +238,6 @@ if (mb_strlen($search) > 1) {
 
 ?> 
 </div>
-<table><tr>
 <?php
 if ($facebook->api_client->users_isAppAdded()) {
   function get_stats($uid) {
@@ -233,14 +247,16 @@ if ($facebook->api_client->users_isAppAdded()) {
 
   }
 
-  $query = 'SELECT uid, pic_square FROM user WHERE has_added_app = 1 AND (uid = '. $user_id .' OR uid IN (SELECT uid2 FROM friend WHERE uid1 = '. $user_id .'))'; 
+  $query = 'SELECT first_name, uid, pic_square FROM user WHERE has_added_app = 1 AND (uid = '. $user_id .' OR uid IN (SELECT uid2 FROM friend WHERE uid1 = '. $user_id .'))'; 
   $results = $facebook->api_client->fql_query($query);
   foreach ($results as $result) {
-    $stats = get_stats($result['uid']);
-    print '<td><img src="'. $result['pic_square'] .'" /></td><td>favorite:'. $stats[0] .'<br />known:'. $stats[1] .'</td>';
+    if ($result['pic_square']) {
+      print '<img src="'. $result['pic_square'] .'" />';
+    } else {
+      print $result['first_name'];
+    }
   }
 }
 
 mysql_close($link);
 ?>
-</tr></table>
