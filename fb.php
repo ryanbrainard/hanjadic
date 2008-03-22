@@ -225,8 +225,8 @@ if (mb_strlen($search) > 1) {
 </div>
 <table><tr>
 <?php
-function get_stats($uid) {
 if ($facebook->api_client->users_isAppAdded()) {
+  function get_stats($uid) {
     $favorite_count = fetch_one(sprintf('SELECT COUNT(*) FROM hanja_user WHERE rel = 0 AND uid = %d', $uid));
     $known_count = fetch_one(sprintf('SELECT COUNT(*) FROM hanja_user WHERE rel = 1 AND uid = %d', $uid));
     return array($favorite_count, $known_count);
