@@ -1,0 +1,7 @@
+RewriteBase /
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ hanjadic.php?search=$1 [L,QSA]
+
+DirectoryIndex hanjadic.php
