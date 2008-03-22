@@ -1,4 +1,8 @@
 <?php
+include_once 'settings.php';
+
+$user_id = $facebook->get_loggedin_user();
+
 $link = mysql_connect('localhost', 'root', '')
    or die('Could not connect: ' . mysql_error());
 mysql_select_db('hanjadic') or die('Could not select database');
@@ -9,6 +13,46 @@ if($_GET['random']) {
 }
 if(!$search) $search = $_GET['search'];
 if(!$search) $search = '字';
+
+print '<fb:google-analytics uacct="UA-1741960-2" page="fb.php?search='. urlencode($search) .'" />';
+
+if(array_key_exists('delete', $_GET)) {
+  mysql_query(sprintf('DELETE FROM hanja_user WHERE uid = %d AND expression = "%s" AND rel = %d', $user_id, mysql_real_escape_string($search), $_GET['delete']));
+}
+
+if(array_key_exists('save', $_GET)) {
+  mysql_query(sprintf('INSERT INTO hanja_user VALUES (%d, "%s", %d)', $user_id, mysql_real_escape_string($search), $_GET['save']));
+}
+
+if(array_key_exists('delete', $_GET) || array_key_exists('save', $_GET)) {
+  $favorite_count = fetch_one(sprintf('SELECT COUNT(*) FROM hanja_user WHERE rel = 0 AND uid = %d', $user_id));
+  $favorites = fetch_all(sprintf("SELECT * FROM hanja_user WHERE uid = %d AND rel = 0 ORDER BY rand() LIMIT 50", $user_id));
+  $known_count = fetch_one(sprintf('SELECT COUNT(*) FROM hanja_user WHERE rel = 1 AND uid = %d', $user_id));
+  $knowns = fetch_all(sprintf("SELECT * FROM hanja_user WHERE uid = %d AND rel = 1 ORDER BY rand() LIMIT 50", $user_id));
+  
+  $fbml = '';
+  if ($known_count) {
+    $fbml = '<fb:name uid="profileowner" useyou="false" firstnameonly="true" capitalize="true" /> knows '. $known_count . ': ';
+    foreach ($knowns as $known) {
+      $fbml .= ' <a href="http://apps.facebook.com/hanjadic/?search='. urlencode($known['expression']) .'">'. $known['expression'] .'</a>';
+    }
+  }
+  if ($favorite_count) {
+    $fbml .= '<br /><fb:name uid="profileowner" firstnameonly="true" useyou="false" capitalize="true" /> has '. $favorite_count .' favorites: ';
+    foreach ($favorites as $favorite) {
+      $fbml .= ' <a href="http://apps.facebook.com/hanjadic/?search='. urlencode($favorite['expression']) .'">'. $favorite['expression'] .'</a>';
+    }
+  }
+  $result = $facebook->api_client->profile_setFBML($fbml. '<fb:ref handle="profile">');
+}
+
+if ($facebook->api_client->users_isAppAdded()) {
+  $favorite = fetch_one(sprintf("SELECT COUNT(*) FROM hanja_user WHERE uid = %d AND expression = '%s' AND rel = 0", $user_id, mysql_real_escape_string($search)));
+  $known = fetch_one(sprintf("SELECT COUNT(*) FROM hanja_user WHERE uid = %d AND expression = '%s' AND rel = 1", $user_id, mysql_real_escape_string($search)));
+} else {
+  $favorite = 0;
+  $known = 0;
+}
 ?>
 <style>
 #hanja-body  { font-family:sans-serif; color:black; font-size: 125%; }
@@ -21,8 +65,17 @@ a     {text-decoration: none; }
 <div>
 <form method="get">
   漢字 玉篇<input name="search" value="<?php print $search ?>"> <a href="/hanjadic/?random=1">random</a>
+  <fb:if-user-has-added-app>| <a href="/hanjadic/?summary=0">favorites</a> | <a href="/hanjadic/?summary=1">known</a> </fb:if-user-has-added-app> 
 </form>
 <?php
+if(array_key_exists('summary', $_GET)) {
+  $results = fetch_all(sprintf("SELECT * FROM hanja_user WHERE uid = %d AND rel = %d", $user_id, $_GET['summary']));
+  foreach ($results as $result) {
+    print '<a href="/hanjadic/?search='. urlencode($result['expression']) .'">'. $result['expression'] .'</a><br/>';
+  }
+  exit;
+}
+
 mb_internal_encoding("UTF-8");
 
 function fetch_all($query) {
@@ -33,6 +86,13 @@ function fetch_all($query) {
   }
   mysql_free_result($result);
   return $return;
+}
+
+function fetch_one($query) {
+  $result = mysql_query($query) or die('Query failed: ' . mysql_error());
+  $line = mysql_fetch_array($result);
+  mysql_free_result($result);
+  return $line[0];
 }
 
 function search_all($search) {
@@ -129,6 +189,23 @@ function display_results($result, $mappings=array()) {
 
 ?><div style="font-size: 140px;"><?= $search ?></div><?
 
+if($facebook->api_client->users_isAppAdded()) { ?>
+<?php if(!$favorite): ?>
+  <a href="/hanjadic/?search=<?php print urlencode($search) ?>&save=0">save as a favorite</a>
+<?php else: ?>
+  <a href="/hanjadic/?search=<?php print urlencode($search) ?>&delete=0">remove from favorites</a>
+<?php endif; ?>  
+|
+<?php if(!$known): ?>
+  <a href="/hanjadic/?search=<?php print urlencode($search) ?>&save=1">save as known</a>
+<?php else: ?>
+  <a href="/hanjadic/?search=<?php print urlencode($search) ?>&delete=1">forgotten</a>
+<?php endif; ?>
+<?
+} else {
+  print '<a href="http://www.facebook.com/add.php?api_key=425661cce547d9c86990a8cd2fe11e07">Add this application to track which characters and phrases you know</a>';
+}
+
 display_results(korean_pronunciation($search), array('hanja' => 'linkify_pieces'));
 
 display_results(hanja_definition($search), array('hanja' => 'linkify'));
@@ -144,6 +221,26 @@ if (mb_strlen($search) > 1) {
   }
 }
 
-mysql_close($link);
 ?> 
 </div>
+<table><tr>
+<?php
+function get_stats($uid) {
+if ($facebook->api_client->users_isAppAdded()) {
+    $favorite_count = fetch_one(sprintf('SELECT COUNT(*) FROM hanja_user WHERE rel = 0 AND uid = %d', $uid));
+    $known_count = fetch_one(sprintf('SELECT COUNT(*) FROM hanja_user WHERE rel = 1 AND uid = %d', $uid));
+    return array($favorite_count, $known_count);
+
+  }
+
+  $query = 'SELECT uid, pic_square FROM user WHERE has_added_app = 1 AND (uid = '. $user_id .' OR uid IN (SELECT uid2 FROM friend WHERE uid1 = '. $user_id .'))'; 
+  $results = $facebook->api_client->fql_query($query);
+  foreach ($results as $result) {
+    $stats = get_stats($result['uid']);
+    print '<td><img src="'. $result['pic_square'] .'" /></td><td>favorite:'. $stats[0] .'<br />known:'. $stats[1] .'</td>';
+  }
+}
+
+mysql_close($link);
+?>
+</tr></table>

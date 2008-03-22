@@ -1,0 +1,17 @@
+***************
+*** 31,37 ****
+  // +---------------------------------------------------------------------------+
+  //
+  
+- include_once $_SERVER['PHP_ROOT'].'/lib/api/client/php_1_1/facebookapi_php5_restlib.php';
+  
+  class Facebook {
+    public $api_client;
+--- 31,37 ----
+  // +---------------------------------------------------------------------------+
+  //
+  
++ include_once 'facebookapi_php5_restlib.php';
+  
+  class Facebook {
+    public $api_client;
