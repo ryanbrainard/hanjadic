@@ -50,7 +50,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <div style="position:abslute;">
 <form method="post">
   漢字 玉篇<input name="search" value="<?= $search ?>" />
-  <p>Join the new <a href="http://kongbuhaja.com">kongbuhaja.com</a> community site for learning Korean.
+  <p>Try the new <a href="http://apps.facebook.com/hanjadic/">Hanja facebook application</a>.
 </form>
 <? } ?>
 <?php

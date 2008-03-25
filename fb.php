@@ -60,8 +60,11 @@ table {font-size: 125%; }
 input {font-size: 125%; }
 a     {text-decoration: none; }
 .hanja { font-size: 150%; }
+.body {font-size: 120%; }
+td {font-size: 120%; }
 </style>
 
+<div class="body">
 <div>
 <form method="get">
   漢字 玉篇<input name="search" value="<?php print $search ?>"> <a href="/hanjadic/?random=1">random</a>
@@ -237,6 +240,7 @@ if (mb_strlen($search) > 1) {
 }
 
 ?> 
+</div>
 </div>
 <?php
 if ($facebook->api_client->users_isAppAdded()) {
