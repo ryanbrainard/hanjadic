@@ -29,19 +29,6 @@ urchinTracker();
 </script>
 </head>
 <body id="hanja-body">
-<center>
-<script type="text/javascript"><!--
-google_ad_client = "pub-2323396850941501";
-/* 728x90, created 3/9/08 */
-google_ad_slot = "0324866860";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
-</center>
 <div style="float:right; text-align:right">
 <a href="http://hanguldesigns.com"><img border="0" src="http://kongbuhaja.com/files/hanja_shirt.jpeg"></a><br />
 <iframe src="http://rcm.amazon.com/e/cm?t=httpthebestbo-20&o=1&p=14&l=st1&mode=books&search=korean%20language&fc1=000000&lt1=&lc1=3366FF&bg1=FFFFFF&f=ifr" marginwidth="0" marginheight="0" width="160" height="600" border="0" frameborder="0" style="border:none;" scrolling="no"></iframe>
@@ -50,7 +37,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <div style="position:abslute;">
 <form method="post">
   漢字 玉篇<input name="search" value="<?= $search ?>" />
-  <p>Try the new <a href="http://apps.facebook.com/hanjadic/">Hanja facebook application</a>.
 </form>
 <? } ?>
 <?php
@@ -170,6 +156,18 @@ display_results(hanja_definition($search), array('hanja' => 'linkify'));
 
 print join(' ', array_map('linkify', radicals($search)));
 
+print '<table><tr><td valign="top"><script type="text/javascript"><!--
+google_ad_client = "pub-2323396850941501";
+/* 160x600, created 10/28/08 */
+google_ad_slot = "7082312851";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></td><td valign="top">';
+
 display_results(search_all($search), array('hanja' => 'linkify'));
 
 if (mb_strlen($search) > 1) {
@@ -177,6 +175,8 @@ if (mb_strlen($search) > 1) {
     display_results(hanja_definition(mb_substr($search, $index, 1)), array('hanja' => 'linkify'));
   }
 }
+
+print '</td></tr></table>';
 
 mysql_close($link);
 ?> 
