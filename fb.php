@@ -162,6 +162,10 @@ function hanja_definition($character, $match_sound=FALSE) {
     }
   }
 
+  if (!count($return)) {
+    $return[] = array('hanja' => $character, 'definition' => $match_sound);
+  }
+
   return $return;
 }
 
