@@ -145,9 +145,14 @@ function radicals($character) {
   return $return;
 }
 
-function hanja_definition($character) {
-  $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s';",
+function hanja_definition($character, $match_sound=FALSE) {
+  if ($match_sound) {
+    $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s' and definition like '%%%s%%';",
+    mysql_real_escape_string($character), mysql_real_escape_string($match_sound));
+  } else {
+    $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s';",
     mysql_real_escape_string($character));
+  }
 
   $return = array();
   
@@ -234,8 +239,10 @@ print join(' ', array_map('linkify', radicals($search)));
 display_results(search_all($search), array('hanja' => 'linkify'));
 
 if (mb_strlen($search) > 1) {
+  $hanja = fetch_all(sprintf("select hangul from hanja where hanja = '%s'", mysql_real_escape_string($search)));
   foreach (range(0, mb_strlen($search)) as $index) {
-    display_results(hanja_definition(mb_substr($search, $index, 1)), array('hanja' => 'linkify'));
+    $hangul_sound = mb_substr($hanja[0]['hangul'], $index, 1);
+    display_results(hanja_definition(mb_substr($search, $index, 1), $hangul_sound), array('hanja' => 'linkify'));
   }
 }
 

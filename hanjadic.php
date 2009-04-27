@@ -21,19 +21,29 @@ input {font-size: 125%; }
 a     {text-decoration: none; }
 .hanja { font-size: 150%; }
 </style>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-1741960-2";
-urchinTracker();
-</script>
 </head>
 <body id="hanja-body">
 <div style="float:right; text-align:right">
 <a href="http://hanguldesigns.com"><img border="0" src="http://kongbuhaja.com/files/hanja_shirt.jpeg"></a><br />
 <iframe src="http://rcm.amazon.com/e/cm?t=httpthebestbo-20&o=1&p=14&l=st1&mode=books&search=korean%20language&fc1=000000&lt1=&lc1=3366FF&bg1=FFFFFF&f=ifr" marginwidth="0" marginheight="0" width="160" height="600" border="0" frameborder="0" style="border:none;" scrolling="no"></iframe>
 </div>
-
+<!-- Piwik -->
+<a href="http://piwik.org" title="Website analytics" onclick="window.open(this.href);return(false);">
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://bravender.us/~dbravender/piwik/" : "http://bravender.us/~dbravender/piwik/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+<!--
+piwik_action_name = '';
+piwik_idsite = 4;
+piwik_url = pkBaseURL + "piwik.php";
+piwik_log(piwik_action_name, piwik_idsite, piwik_url);
+//-->
+</script><object>
+<noscript><p>Website analytics <img src="http://bravender.us/~dbravender/piwik/piwik.php" style="border:0" alt="piwik"/></p>
+</noscript></object></a>
+<!-- /Piwik -->
 <div style="position:abslute;">
 <form method="post">
   漢字 玉篇<input name="search" value="<?= $search ?>" />
@@ -87,9 +97,14 @@ function radicals($character) {
   return $return;
 }
 
-function hanja_definition($character) {
-  $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s';",
+function hanja_definition($character, $match_sound=FALSE) {
+  if ($match_sound) {
+    $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s' and definition like '%%%s%%';",
+    mysql_real_escape_string($character), mysql_real_escape_string($match_sound));
+  } else {
+    $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s';",
     mysql_real_escape_string($character));
+  }
 
   $return = array();
   
@@ -171,8 +186,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 display_results(search_all($search), array('hanja' => 'linkify'));
 
 if (mb_strlen($search) > 1) {
+  $hanja = fetch_all(sprintf("select hangul from hanja where hanja = '%s';", mysql_real_escape_string($search)));
   foreach (range(0, mb_strlen($search)) as $index) {
-    display_results(hanja_definition(mb_substr($search, $index, 1)), array('hanja' => 'linkify'));
+    $hangul_sound = mb_substr($hanja[0]['hangul'], $index, 1);
+    display_results(hanja_definition(mb_substr($search, $index, 1), $hangul_sound), array('hanja' => 'linkify'));
   }
 }
 
