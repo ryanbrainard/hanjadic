@@ -22,27 +22,10 @@ a     {text-decoration: none; }
 .hanja { font-size: 150%; }
 </style>
 </head>
-<body id="hanja-body">
-<div style="float:right; text-align:right">
-<iframe src="http://rcm.amazon.com/e/cm?t=httpthebestbo-20&o=1&p=14&l=st1&mode=books&search=korean%20language&fc1=000000&lt1=&lc1=3366FF&bg1=FFFFFF&f=ifr" marginwidth="0" marginheight="0" width="160" height="600" border="0" frameborder="0" style="border:none;" scrolling="no"></iframe>
+<body id="hanja-body" onscroll="document.getElementById('azn_srch').style.top = document.body.scrollTop;">
+<div id="azn_srch" style="position: absolute; right: 0; top: 0; margin-right: 10px;">
+<SCRIPT charset="utf-8" type="text/javascript" src="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822/US/httpthebestbo-20/8002/a36d5a6f-bcb9-4db9-bf55-078d3b0958d0"> </SCRIPT> <NOSCRIPT><A HREF="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822%2FUS%2Fhttpthebestbo-20%2F8002%2Fa36d5a6f-bcb9-4db9-bf55-078d3b0958d0&Operation=NoScript">Amazon.com Widgets</A></NOSCRIPT>
 </div>
-<!-- Piwik -->
-<a href="http://piwik.org" title="Website analytics" onclick="window.open(this.href);return(false);">
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://bravender.us/~dbravender/piwik/" : "http://bravender.us/~dbravender/piwik/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-<!--
-piwik_action_name = '';
-piwik_idsite = 4;
-piwik_url = pkBaseURL + "piwik.php";
-piwik_log(piwik_action_name, piwik_idsite, piwik_url);
-//-->
-</script><object>
-<noscript><p>Website analytics <img src="http://bravender.us/~dbravender/piwik/piwik.php" style="border:0" alt="piwik"/></p>
-</noscript></object></a>
-<!-- /Piwik -->
 <div style="position:abslute;">
 <form method="post">
   漢字 玉篇<input name="search" value="<?= $search ?>" />
@@ -191,6 +174,19 @@ print '</td></tr></table>';
 mysql_close($link);
 ?> 
 </div>
+
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://dan.bravender.us/~dbravender/piwik/" : "http://dan.bravender.us/~dbravender/piwik/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 4);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script>
+<!-- End Piwik Tag -->
 
 <? if (!$_GET['embed']) { ?>
 </body>
