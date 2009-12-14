@@ -16,10 +16,11 @@ if(!$search) $search = '字';
 <meta name="verify-v1" content="+UM6qgN3/CVGuWlHqgf9GBVKxYyz32j0cmRK+PxrE7s=" />
 <style>
 #hanja-body  { font-family:sans-serif; color:black; font-size: 125%; }
-table {font-size: 125%; }
+table {font-size: 125%; margin-right:140px;}
 input {font-size: 125%; }
 a     {text-decoration: none; }
 .hanja { font-size: 150%; }
+.conjugate { font-size: 50%; font-color: red;}
 </style>
 </head>
 <body id="hanja-body" onscroll="document.getElementById('azn_srch').style.top = document.body.scrollTop;">
@@ -48,7 +49,7 @@ function fetch_all($query) {
 }
 
 function search_all($search) {
-  $query = sprintf("SELECT hanja, hangul, english FROM hanja WHERE english LIKE '%%%s%%' or hanja LIKE '%%%s%%' or hangul LIKE '%%%s%%';",
+  $query = sprintf("SELECT hanja, hangul, english, part_of_speech FROM hanja WHERE english LIKE '%%%s%%' or hanja LIKE '%%%s%%' or hangul LIKE '%%%s%%';",
     mysql_real_escape_string($search),
     mysql_real_escape_string($search),
     mysql_real_escape_string($search));
@@ -127,7 +128,7 @@ function decorate($array, $mappings) {
   $return = array();
   foreach ($array as $line) {
     foreach (array_keys($mappings) as $col) {
-      $line[$col] = call_user_func($mappings[$col], $line[$col]);
+      $line[$col] = call_user_func($mappings[$col], $line[$col], $line);
     }
     $return[] = $line;
   }
@@ -148,6 +149,14 @@ function display_results($result, $mappings=array()) {
   echo "</table>\n";
 }
 
+function conjugate($result, $other_fields) {
+    if (strstr($result, 'v') && mb_substr($other_fields['hangul'], -1, 1) == '다') {
+        return '<a class="conjugate" href="http://dongsa.net/?infinitive='. urlencode($other_fields['hangul']) .'">conjugate verb</a>';
+    } else {
+        return '';
+    }
+}
+
 ?><div style="font-size: 170px;"><?= $search ?></div><?
 
 display_results(korean_pronunciation($search), array('hanja' => 'linkify_pieces'));
@@ -159,7 +168,7 @@ print join(' ', array_map('linkify', radicals($search)));
 
 print '<table><tr><td valign="top"></td><td valign="top">';
 
-display_results(search_all($search), array('hanja' => 'linkify'));
+display_results(search_all($search), array('hanja' => 'linkify', 'part_of_speech' => 'conjugate'));
 
 if (mb_strlen($search) > 1) {
   $hanja = fetch_all(sprintf("select hangul from hanja where hanja = '%s';", mysql_real_escape_string($search)));
