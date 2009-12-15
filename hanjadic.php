@@ -10,7 +10,7 @@ if(!$search) $search = '字';
 <? if(!$_GET['embed']) { ?>
 <html><!-- new -->
 <head>
-<title><?php print $search ?></title>
+<title><?php print $search ?> - Hanja Dictionary</title>
 <meta name="verify-v1" content="+UM6qgN3/CVGuWlHqgf9GBVKxYyz32j0cmRK+PxrE7s=" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 <meta name="verify-v1" content="+UM6qgN3/CVGuWlHqgf9GBVKxYyz32j0cmRK+PxrE7s=" />
@@ -29,7 +29,7 @@ a     {text-decoration: none; }
 </div>
 <div style="position:abslute;">
 <form method="post">
-  漢字 玉篇<input name="search" value="<?= $search ?>" />
+  漢字 玉篇<input name="search" value="<?= $search ?>" /> Search Hanja Dictionary
 </form>
 <? } ?>
 <?php
