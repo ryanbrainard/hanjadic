@@ -81,27 +81,15 @@ function radicals($character) {
 }
 
 function hanja_definition($character, $match_sound=FALSE) {
-  if ($match_sound) {
-    $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s' and definition like '%%%s%%';",
-    mysql_real_escape_string($character), mysql_real_escape_string($match_sound));
-  } else {
-    $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s';",
-    mysql_real_escape_string($character));
-  }
+  $query = sprintf("SELECT hanja, definition FROM hanja_definition WHERE hanja = '%s';",
+  mysql_real_escape_string($character));
 
-  $return = array();
-  
+  $definition = '';
   foreach (fetch_all($query) as $result) {
-    if (mb_substr($result['hanja'], 0,1) == $character) {
-      $return[] = array('hanja' => $result['hanja'], 'definition' => $result['definition']);
-    }
+    $definition = $result['definition'] .' '. $definition;
   }
 
-  if (!count($return)) {
-    $return[]= array('hanja' => $character, 'definition' => $match_sound);
-  }
-
-  return $return;
+  return array(array('hanja' => $result['hanja'], 'definition' => $definition));
 }
 
 function linkify_pieces($string) {
@@ -115,7 +103,7 @@ function linkify_pieces($string) {
 
 function linkify($string) {
   if ($string != $search) {
-    return wrap_span('<a href="'. $string .'">'. $string .'</a>', 'hanja');
+    return wrap_span('<a href="http://hanjadic.bravender.us/'. $string .'">'. $string .'</a>', 'hanja');
   }
   return $string;
 }
