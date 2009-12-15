@@ -31,7 +31,9 @@ function hanja_definition($character, $match_sound=FALSE) {
   $definition = '';
 
   foreach ($items as $result) {
-    $definition = $result['definition'] .' '. $definition;
+    if ($match_sound && mb_strstr($result['definition'], $match_sound)) {
+        $definition = $result['definition'] .' '. $definition;
+    }
   }
   return array(array('hanja' => $character, 'definition' => $definition));
 }
@@ -93,10 +95,22 @@ function conjugate($result, $other_fields) {
 $verb = fetch_all(sprintf("select hanja from hanja where hangul = '%s'", mysql_real_escape_string($search)));
 
 if (!isset($verb[0]['hanja'])) {
-    exit;
-} else {
-    $chinese = $verb[0]['hanja'];
+    if(mb_substr($search, -2, 2) == '하다') {
+        $verb = fetch_all(sprintf("select hanja from hanja where hangul = '%s'", mysql_real_escape_string(mb_substr($search, 0, -2))));
+    }
 }
+
+if (!isset($verb[0]['hanja'])) {
+    if(mb_substr($search, -3, 3) == '적이다') {
+        $verb = fetch_all(sprintf("select hanja from hanja where hangul = '%s'", mysql_real_escape_string(mb_substr($search, 0, -2).'인')));
+    } 
+}
+
+if (!isset($verb[0]['hanja'])) {
+    exit;
+}
+
+$chinese = $verb[0]['hanja'];
 
 if (mb_strlen($chinese) > 1) {
   $hanja = fetch_all(sprintf("select hangul from hanja where hanja = '%s';", mysql_real_escape_string($chinese)));
