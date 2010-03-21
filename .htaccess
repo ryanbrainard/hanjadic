@@ -1,8 +1,3 @@
-<Files ~ "(\.(inc|module|pl|sh|sql|theme|engine|xtmpl|svn-base|mysql|pgsql)|CVS|Entries|Repositories|Root|.svn|text-base|prop-base|props|wcprops|entries|format|scripts|database|.git)$">
-   Order deny,allow
-   Deny from all
-</Files>
-
 RewriteBase /
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
