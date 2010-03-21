@@ -171,7 +171,17 @@ print '</td></tr></table>';
 mysql_close($link);
 ?> 
 </div>
-
+<script type="text/javascript"><!--
+google_ad_client = "pub-2323396850941501";
+/* 468x60, created 12/15/09 */
+google_ad_slot = "7208290377";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://dan.bravender.us/~dbravender/piwik/" : "http://dan.bravender.us/~dbravender/piwik/");

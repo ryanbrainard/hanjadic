@@ -29,12 +29,11 @@ function hanja_definition($character, $match_sound=FALSE) {
   $return = array();
   
   $definition = '';
-
+  
   foreach ($items as $result) {
-    if ($match_sound && mb_strstr($result['definition'], $match_sound)) {
-        $definition = $result['definition'] .' '. $definition;
-    }
+    $definition = $result['definition'] .' '. $definition;
   }
+
   return array(array('hanja' => $character, 'definition' => $definition));
 }
 
