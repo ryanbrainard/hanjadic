@@ -3,7 +3,7 @@ include_once 'settings.php';
 
 $user_id = $facebook->get_loggedin_user();
 
-$link = mysql_connect('localhost', 'root', '')
+$link = mysql_connect('localhost', 'hanjadic', 'gty3dfm3w8')
    or die('Could not connect: ' . mysql_error());
 mysql_select_db('hanjadic') or die('Could not select database');
 
