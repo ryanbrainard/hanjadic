@@ -1,10 +1,10 @@
 <?php
-if($_POST['search']) {
+if($_POST['q']) {
   $host = $_SERVER['HTTP_HOST'];
   $uri = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-  header("Location: http://$host$uri/". $_POST['search']);
+  header("Location: http://$host$uri/". $_POST['q']);
 }
-if(!$search) $search = $_GET['search'];
+if(!$search) $search = $_GET['q'];
 if(!$search) $search = '字';
 ?>
 <? if(!$_GET['embed']) { ?>
@@ -29,7 +29,7 @@ a     {text-decoration: none; }
 </div>
 <div style="position:abslute;">
 <form method="post">
-  漢字 玉篇<input name="search" value="<?= $search ?>" /> Search Hanja Dictionary
+  漢字 玉篇<input name="q" value="<?= $search ?>" /> Search Hanja Dictionary
 </form>
 <? } ?>
 <?php
