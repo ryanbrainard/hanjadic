@@ -2,7 +2,7 @@
 header('Content-Type: text/javascript');
 $search = $_GET['search'];
 mb_internal_encoding("UTF-8");
-$link = mysql_connect('localhost', 'root', '')
+$link = mysql_connect('localhost', 'hanjadic', 'gty3dfm3w8')
    or die('Could not connect: ' . mysql_error());
 mysql_select_db('hanjadic') or die('Could not select database');
 
