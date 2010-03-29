@@ -74,7 +74,7 @@ td {font-size: 120%; }
 if(array_key_exists('summary', $_GET)) {
   $results = fetch_all(sprintf("SELECT * FROM hanja_user WHERE uid = %d AND rel = %d", $user_id, $_GET['summary']));
   foreach ($results as $result) {
-    print '<a href="/hanjadic/?q='. urlencode($result['expression']) .'">'. $result['expression'] .'</a><br/>';
+    print '<a href="/hanjadic/?search='. urlencode($result['expression']) .'">'. $result['expression'] .'</a><br/>';
   }
   exit;
 }
