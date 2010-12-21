@@ -24,9 +24,6 @@ a     {text-decoration: none; }
 </style>
 </head>
 <body id="hanja-body" onscroll="document.getElementById('azn_srch').style.top = document.body.scrollTop;">
-<div id="azn_srch" style="position: absolute; right: 0; top: 0; margin-right: 10px;">
-<SCRIPT charset="utf-8" type="text/javascript" src="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822/US/httpthebestbo-20/8002/a36d5a6f-bcb9-4db9-bf55-078d3b0958d0"> </SCRIPT> <NOSCRIPT><A HREF="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822%2FUS%2Fhttpthebestbo-20%2F8002%2Fa36d5a6f-bcb9-4db9-bf55-078d3b0958d0&Operation=NoScript">Amazon.com Widgets</A></NOSCRIPT>
-</div>
 <div style="position:abslute;">
 <form method="post">
   漢字 玉篇<input name="q" value="<?= $search ?>" /> Search Hanja Dictionary
@@ -171,17 +168,6 @@ print '</td></tr></table>';
 mysql_close($link);
 ?> 
 </div>
-<script type="text/javascript"><!--
-google_ad_client = "pub-2323396850941501";
-/* 468x60, created 12/15/09 */
-google_ad_slot = "7208290377";
-google_ad_width = 468;
-google_ad_height = 60;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.bravender.us/" : "http://piwik.bravender.us/");
