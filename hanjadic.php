@@ -99,6 +99,7 @@ function linkify_pieces($string) {
 }
 
 function linkify($string) {
+  global $search;
   if ($string != $search) {
     return wrap_span('<a href="http://hanjadic.bravender.us/'. $string .'">'. $string .'</a>', 'hanja');
   }
