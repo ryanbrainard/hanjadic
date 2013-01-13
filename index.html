@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ .Terms }} - Hanja Dictionary</title>
+</head>
+<body>
+	<form method="post" action="/">
+		Search <input name="q" value="{{ .Terms }}">
+	</form>
+
+	{{ range .Hanjas }}
+		<a href="/{{ .Hanja }}">{{ .Hanja }}</a> {{ .Definition }}
+	{{ end }}
+
+	{{ range .Radicals }}
+		<a href="/{{ . }}">{{ . }}</a>
+	{{ end }}
+
+	<table>
+	{{ range .SimilarWords }}
+		<tr>
+			<td><a href="/{{ .Hanja }}">{{ .Hanja }}</a></td>
+			<td>{{ .English }}</td>
+			<td>{{ .Hangul }}</td>
+		</tr>
+	{{ end }}
+	</table>
+</body>
+</html>
+

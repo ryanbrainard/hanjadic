@@ -1,0 +1,3 @@
+[submodule "hanja-dictionary"]
+	path = hanja-dictionary
+	url = git+ssh://bravender.us/home/dbravender/projects/hanja-dictionary
