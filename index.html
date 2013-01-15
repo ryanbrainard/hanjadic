@@ -5,18 +5,20 @@
 </head>
 <body>
 	<form method="post" action="/">
-		Search <input name="q" value="{{ .Terms }}">
+		<input id="terms" name="q" value="{{ .Terms }}">
 	</form>
 
 	{{ range .Hanjas }}
-		<a href="/{{ .Hanja }}">{{ .Hanja }}</a> {{ .Definition }}
+		<div class="hanja"><a href="/{{ .Hanja }}">{{ .Hanja }}</a> {{ .Definition }}</div>
 	{{ end }}
 
+	<div class="radicals">
 	{{ range .Radicals }}
 		<a href="/{{ . }}">{{ . }}</a>
 	{{ end }}
+	</div>
 
-	<table>
+	<table class="similar-words">
 	{{ range .SimilarWords }}
 		<tr>
 			<td><a href="/{{ .Hanja }}">{{ .Hanja }}</a></td>
@@ -27,4 +29,3 @@
 	</table>
 </body>
 </html>
-
