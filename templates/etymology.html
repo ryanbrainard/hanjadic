@@ -1,0 +1,3 @@
+{{ range .SimilarWords }}
+	document.write('<div class="hanja"><a href="http://hanjadic.bravender.us/{{ .Hanja }}">{{ .Hanja }}</a> {{ .English }}</div>');
+{{ end }}

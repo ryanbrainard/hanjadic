@@ -1,14 +1,16 @@
 package main
 
 import (
-	"strings"
+	"database/sql"
+	"flag"
+	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"io"
-	"flag"
-	"net/http"
 	"log"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 var db *sql.DB
@@ -19,6 +21,10 @@ func init() {
 	db, err = sql.Open("sqlite3", "../hanja-dictionary/hanjadic.sqlite")
 	die(err)
 	port = flag.String("port", ":8089", "port")
+}
+
+type KoreanPronunciation struct {
+	Hanja  []string
 }
 
 type Hanja struct {
@@ -33,18 +39,23 @@ type SimilarWord struct {
 }
 
 type Results struct {
-	Terms        string
-	Hanjas       []Hanja
-	Radicals     []string
-	SimilarWords []SimilarWord
+	Terms          string
+	Hanjas         []Hanja
+	Radicals       []string
+	SimilarWords   []SimilarWord
+	Pronunciations []KoreanPronunciation
 }
 
-var templates = template.Must(template.ParseFiles("index.html"))
+var templates *template.Template
 
 func die(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (w *SimilarWord) IsVerb() bool {
+	return strings.HasSuffix(w.Hangul, "하다")
 }
 
 func search(terms string) Results {
@@ -75,16 +86,27 @@ func search(terms string) Results {
 			results.Hanjas = append(results.Hanjas, Hanja{Definition: definition, Hanja: hanja})
 		}
 	}
-	rstmt, err := db.Prepare("select radical from radicals where hanjas match ?")
+	stmt, err = db.Prepare("select radical from radicals where hanjas match ?")
 	die(err)
-	defer rstmt.Close()
-	rrows, err := rstmt.Query(terms)
+	defer stmt.Close()
+	rows, err = stmt.Query(terms)
 	die(err)
-	defer rrows.Close()
-	for rrows.Next() {
+	defer rows.Close()
+	for rows.Next() {
 		var radical string
-		rrows.Scan(&radical)
+		rows.Scan(&radical)
 		results.Radicals = append(results.Radicals, radical)
+	}
+	stmt, err = db.Prepare("select hanjas from korean_pronunciation where hangul match ?")
+	die(err)
+	defer stmt.Close()
+	rows, err = stmt.Query(terms)
+	die(err)
+	defer rows.Close()
+	for rows.Next() {
+		var hanjas string
+		rows.Scan(&hanjas)
+		results.Pronunciations = append(results.Pronunciations, KoreanPronunciation{strings.Split(hanjas, "")})
 	}
 	return results
 }
@@ -95,7 +117,7 @@ func render(terms string, w io.Writer) {
 
 func handler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
-		http.Redirect(w, req, "/" + req.FormValue("q"), 302)
+		http.Redirect(w, req, "/"+req.FormValue("q"), 302)
 		return
 	}
 	terms := req.URL.Path[1:]
@@ -105,7 +127,13 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	render(terms, w)
 }
 
+func etymology_handler(w http.ResponseWriter, req *http.Request) {
+	terms := req.FormValue("search")
+	templates.ExecuteTemplate(w, "etymology.html", search(terms))
+}
+
 func serve() {
+	http.HandleFunc("/chinese_etymology.php", etymology_handler)
 	http.HandleFunc("/", handler)
 	err := http.ListenAndServe(*port, nil)
 	if err != nil {
@@ -114,5 +142,9 @@ func serve() {
 }
 
 func main() {
+	path, _ := filepath.Abs(os.Args[0])
+	path = filepath.Dir(path)
+	os.Chdir(path)
+	templates = template.Must(template.ParseFiles("../templates/index.html", "../templates/etymology.html"))
 	serve()
 }

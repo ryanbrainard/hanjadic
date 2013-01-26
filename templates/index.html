@@ -2,11 +2,26 @@
 <html>
 <head>
 	<title>{{ .Terms }} - Hanja Dictionary</title>
+	<style>
+		body {
+			font-size: 150%;
+		}
+		#terms {
+			border: none;
+			font-size: 250%;
+		}
+	</style>
 </head>
 <body>
 	<form method="post" action="/">
 		<input id="terms" name="q" value="{{ .Terms }}">
 	</form>
+
+	{{ range .Pronunciations }}
+		{{ range .Hanja }}
+			<span class="hanja"><a href="/{{ . }}">{{ . }}</a></span>
+		{{ end }}
+	{{ end }}
 
 	{{ range .Hanjas }}
 		<div class="hanja"><a href="/{{ .Hanja }}">{{ .Hanja }}</a> {{ .Definition }}</div>
@@ -24,8 +39,14 @@
 			<td><a href="/{{ .Hanja }}">{{ .Hanja }}</a></td>
 			<td>{{ .English }}</td>
 			<td>{{ .Hangul }}</td>
+			{{ if .IsVerb }}
+				<td><a href="http://dongsa.net/?infinitive={{ .Hangul }}">conjugate verb</a></td>
+			{{ else }}
+				<td></td>
+			{{ end }}
 		</tr>
 	{{ end }}
 	</table>
+</div>
 </body>
 </html>
