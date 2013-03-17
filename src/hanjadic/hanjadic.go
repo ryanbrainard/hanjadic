@@ -24,7 +24,7 @@ func init() {
 }
 
 type KoreanPronunciation struct {
-	Hanja  []string
+	Hanja []string
 }
 
 type Hanja struct {

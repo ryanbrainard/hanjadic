@@ -2,19 +2,26 @@
 <html>
 <head>
 	<title>{{ .Terms }} - Hanja Dictionary</title>
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport" />
 	<style>
-		body {
-			font-size: 150%;
+		@media only screen and (min-width: 1000px) {
+			body {
+				font-size: 150%;
+			}
 		}
 		#terms {
 			border: none;
 			font-size: 250%;
 		}
+		.nowrap {
+			white-space: nowrap;
+			vertical-align: top;
+		}
 	</style>
 </head>
 <body>
 	<form method="post" action="/">
-		<input id="terms" name="q" value="{{ .Terms }}">
+		<input id="terms" name="q" value="{{ .Terms }}" style="width:100%;">
 	</form>
 
 	{{ range .Pronunciations }}
@@ -23,9 +30,14 @@
 		{{ end }}
 	{{ end }}
 
+	<table>
 	{{ range .Hanjas }}
-		<div class="hanja"><a href="/{{ .Hanja }}">{{ .Hanja }}</a> {{ .Definition }}</div>
+		<tr>
+			<td class="hanja nowrap"><a href="/{{ .Hanja }}">{{ .Hanja }}</a></td>
+			<td>{{ .Definition }}</td>
+		</tr>
 	{{ end }}
+	</table>
 
 	<div class="radicals">
 	{{ range .Radicals }}
@@ -36,14 +48,13 @@
 	<table class="similar-words">
 	{{ range .SimilarWords }}
 		<tr>
-			<td><a href="/{{ .Hanja }}">{{ .Hanja }}</a></td>
-			<td>{{ .English }}</td>
-			<td>{{ .Hangul }}</td>
+			<td class="nowrap"><a href="/{{ .Hanja }}">{{ .Hanja }}</a></td>
+			<td class="nowrap">{{ .Hangul }}</td>
+			<td>{{ .English }}
 			{{ if .IsVerb }}
-				<td><a href="http://dongsa.net/?infinitive={{ .Hangul }}">conjugate verb</a></td>
-			{{ else }}
-				<td></td>
+				(<a href="http://dongsa.net/?infinitive={{ .Hangul }}">conjugate verb</a>)
 			{{ end }}
+			</td>
 		</tr>
 	{{ end }}
 	</table>
