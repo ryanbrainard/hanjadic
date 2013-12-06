@@ -1,6 +1,8 @@
-from base
+from ubuntu:12.04
 
 maintainer Dan Bravender
+
+run apt-get install -y libsqlite3-dev
 
 run mkdir -p /opt/hanjadic
 add . /opt/hanjadic
