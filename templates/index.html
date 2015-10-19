@@ -3,6 +3,7 @@
 <head>
 	<title>{{ .Terms }} - Hanja Dictionary</title>
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
+	<meta charset="UTF-8">
 	<style>
 		a {
 			text-decoration: none;
@@ -16,6 +17,12 @@
 			border: none;
 			font-size: 250%;
 		}
+
+		footer {
+			font-size: 75%;
+			margin-top: 1em;
+		}
+
 		.nowrap {
 			white-space: nowrap;
 			vertical-align: top;
@@ -62,5 +69,8 @@
 	{{ end }}
 	</table>
 </div>
+<footer>
+hanjadic.bravender.net is &copy; 2008 - {{ .CurrentYear }} Dan Bravender. Source code is available on <a href="https://github.com/dbravender/hanjadic">GitHub</a>.
+</footer>
 </body>
 </html>

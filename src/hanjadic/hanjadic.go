@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 var db *sql.DB
@@ -39,6 +40,7 @@ type SimilarWord struct {
 }
 
 type Results struct {
+	CurrentYear    int
 	Terms          string
 	Hanjas         []Hanja
 	Radicals       []string
@@ -60,6 +62,7 @@ func (w *SimilarWord) IsVerb() bool {
 
 func search(terms string) Results {
 	var results Results
+	results.CurrentYear = time.Now().Year()
 	results.Terms = terms
 	query := "*" + strings.Join(strings.Split(terms, " "), "*") + "*"
 	stmt, err := db.Prepare("select hanja, hangul, english from (select hanja, hangul, english from hanjas where hidden_index match ? union select hanja, hangul, english from hanjas where english match ? union select hanja, hangul, english from hanjas where hangul match ? union select hanja, hangul, english from hanjas where hanjas match ?) order by hangul")
